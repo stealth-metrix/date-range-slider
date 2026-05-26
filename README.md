@@ -2,6 +2,8 @@
 
 Interactive date range picker built on [noUiSlider](https://refreshless.com/nouislider/). Features a draggable range slider, two-month calendar dropdown, preset buttons, zoom controls, and nudge arrows.
 
+![Demo](demo.gif)
+
 ## Install
 
 ```bash
