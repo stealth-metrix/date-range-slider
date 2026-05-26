@@ -2,7 +2,7 @@
 
 Interactive date range picker built on [noUiSlider](https://refreshless.com/nouislider/). Features a draggable range slider, two-month calendar dropdown, preset buttons, zoom controls, and nudge arrows.
 
-![Demo](demo.gif)
+https://github.com/stealth-metrix/date-range-slider/raw/main/demo.mp4
 
 ## Install
 
