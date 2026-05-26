@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date Picker</title>
+  <link href="node_modules/nouislider/dist/nouislider.css" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      gap: 2rem;
+    }
+
+    .container {
+      background: #f5f5f5;
+      border-radius: 12px;
+      padding: 1.25rem 2rem;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .date-summary {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .date-summary .date {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', 'Monaco', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      cursor: pointer;
+      position: relative;
+      border-bottom: 2px solid #3b82f6;
+      padding-bottom: 2px;
+    }
+
+    .date-summary .date:hover {
+      color: #2563eb;
+      border-bottom-color: #2563eb;
+    }
+
+    .date-summary .separator {
+      color: #bbb;
+      font-size: 0.85rem;
+    }
+
+    .date-summary .days-badge {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', 'Monaco', monospace;
+      background: #e94560;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.3px;
+    }
+
+    .date-summary .max-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #e94560;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .date-summary .max-label.visible {
+      opacity: 1;
+    }
+
+    .preset-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .preset-btn {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      font-size: 0.65rem;
+      padding: 3px 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .preset-btn:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+
+    .preset-btn.active {
+      background: #3b82f6;
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+    }
+
+    .nudge-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+      background: #fff;
+      color: #555;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .nudge-btn:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #f0f5ff;
+    }
+
+    .nudge-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .controls-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.35rem;
+      margin-top: 0.5rem;
+    }
+
+    .zoom-btn {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      font-size: 0.6rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #fff;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .zoom-btn:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #f0f5ff;
+    }
+
+    .zoom-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .zoom-level {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      font-size: 0.6rem;
+      color: #999;
+      min-width: 3rem;
+      text-align: center;
+    }
+
+    .slider-wrapper {
+      flex: 1;
+      padding: 0 0.25rem;
+    }
+
+    /* noUiSlider custom theme */
+    .noUi-target {
+      background: #ddd;
+      border: none;
+      border-radius: 6px;
+      height: 8px;
+      box-shadow: none;
+    }
+
+    .noUi-connect {
+      background: linear-gradient(90deg, #e94560, #c23152);
+      border-radius: 6px;
+      cursor: grab;
+    }
+
+    .noUi-connect:active {
+      cursor: grabbing;
+    }
+
+    .noUi-handle {
+      width: 24px !important;
+      height: 24px !important;
+      border-radius: 50% !important;
+      background: #e94560 !important;
+      border: 3px solid #fff !important;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+      cursor: grab;
+      top: -9px !important;
+      right: -12px !important;
+    }
+
+    .noUi-handle:active {
+      cursor: grabbing;
+    }
+
+    .noUi-handle::before,
+    .noUi-handle::after {
+      display: none;
+    }
+
+    .noUi-tooltip {
+      display: none !important;
+    }
+
+    /* Year labels below the slider */
+    .year-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      padding: 0;
+    }
+
+    .year-labels span {
+      font-size: 0.65rem;
+      color: #999;
+      letter-spacing: 0.5px;
+    }
+
+    /* Calendar dropdown */
+    .calendar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 99;
+    }
+
+    .calendar-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 0.5rem;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      padding: 1rem;
+      z-index: 100;
+      user-select: none;
+    }
+
+    .calendar-dropdown.open {
+      display: block;
+    }
+
+    .calendar-overlay.open {
+      display: block;
+    }
+
+    .cal-grid {
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .cal-month {
+      width: 220px;
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .cal-header .cal-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .cal-nav {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 0.7rem;
+      color: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cal-nav:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .cal-weekdays span {
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      padding: 2px 0;
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+    }
+
+    .cal-day {
+      font-size: 0.7rem;
+      text-align: center;
+      padding: 5px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      color: #333;
+      position: relative;
+    }
+
+    .cal-day:hover {
+      background: #e8f0fe;
+    }
+
+    .cal-day.empty {
+      cursor: default;
+    }
+
+    .cal-day.empty:hover {
+      background: none;
+    }
+
+    .cal-day.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .cal-day.disabled:hover {
+      background: none;
+    }
+
+    .cal-day.in-range {
+      background: #fce4e8;
+      border-radius: 0;
+    }
+
+    .cal-day.range-start {
+      background: #e94560;
+      color: #fff;
+      border-radius: 4px 0 0 4px;
+    }
+
+    .cal-day.range-end {
+      background: #e94560;
+      color: #fff;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .cal-day.range-start.range-end {
+      border-radius: 4px;
+    }
+
+    .cal-day.today {
+      font-weight: 700;
+      box-shadow: inset 0 0 0 1px #3b82f6;
+    }
+
+    .cal-picking-label {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #888;
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #eee;
+    }
+
+    .cal-picking-label strong {
+      color: #e94560;
+    }
+
+    /* Documentation section */
+    .docs {
+      width: 100%;
+      max-width: 700px;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .docs h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #e8e8e8;
+    }
+
+    .docs h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+      margin: 1.25rem 0 0.4rem;
+    }
+
+    .docs table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.5rem 0 1rem;
+    }
+
+    .docs th {
+      text-align: left;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .docs td {
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+
+    .docs td:first-child {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      font-size: 0.8rem;
+      color: #e94560;
+      white-space: nowrap;
+    }
+
+    .docs code {
+      font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+      font-size: 0.8rem;
+      background: #f0f0f0;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .docs ul {
+      padding-left: 1.25rem;
+      margin: 0.4rem 0;
+    }
+
+    .docs li {
+      margin-bottom: 0.3rem;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="date-summary" id="date-summary" style="position:relative;">
+      <span class="date" id="start-date">--</span>
+      <span class="separator">&mdash;</span>
+      <span class="date" id="end-date">--</span>
+      <span class="days-badge" id="days-badge">--</span>
+      <span class="max-label" id="max-label">MAX</span>
+
+      <div class="calendar-overlay" id="cal-overlay"></div>
+      <div class="calendar-dropdown" id="cal-dropdown">
+        <div class="cal-grid">
+          <div class="cal-month" id="cal-left">
+            <div class="cal-header">
+              <button class="cal-nav" id="cal-prev">&#9664;</button>
+              <span class="cal-title" id="cal-left-title"></span>
+              <span></span>
+            </div>
+            <div class="cal-weekdays">
+              <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div class="cal-days" id="cal-left-days"></div>
+          </div>
+          <div class="cal-month" id="cal-right">
+            <div class="cal-header">
+              <span></span>
+              <span class="cal-title" id="cal-right-title"></span>
+              <button class="cal-nav" id="cal-next">&#9654;</button>
+            </div>
+            <div class="cal-weekdays">
+              <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            </div>
+            <div class="cal-days" id="cal-right-days"></div>
+          </div>
+        </div>
+        <div class="cal-picking-label" id="cal-label">Click a date to set <strong>start</strong></div>
+      </div>
+    </div>
+
+    <div class="preset-bar">
+      <button class="preset-btn" data-days="7">7d</button>
+      <button class="preset-btn" data-days="30">30d</button>
+      <button class="preset-btn" data-days="90">90d</button>
+      <button class="preset-btn" data-days="180">6mo</button>
+      <button class="preset-btn" data-days="365">1yr</button>
+      <button class="preset-btn" data-days="730">2yr</button>
+      <button class="preset-btn" data-days="max">Max</button>
+    </div>
+
+    <div class="slider-row">
+      <button class="nudge-btn" id="nudge-left" title="Shift range earlier">&#9664;</button>
+      <div class="slider-wrapper">
+        <div id="date-slider"></div>
+        <div class="year-labels" id="year-labels"></div>
+      </div>
+      <button class="nudge-btn" id="nudge-right" title="Shift range later">&#9654;</button>
+    </div>
+
+    <div class="controls-bar">
+      <button class="zoom-btn" id="zoom-in" title="Zoom in">+ Zoom</button>
+      <span class="zoom-level" id="zoom-level">3yr view</span>
+      <button class="zoom-btn" id="zoom-out" title="Zoom out">&minus; Zoom</button>
+      <button class="zoom-btn" id="zoom-reset" title="Reset to full range">Reset</button>
+    </div>
+  </div>
+
+  <div class="docs">
+    <h2>Usability Guide</h2>
+
+    <h3>Interactions</h3>
+    <table>
+      <tr><th>Action</th><th>How</th></tr>
+      <tr><td>Drag handle</td><td>Click and drag either circle to move the start or end date independently.</td></tr>
+      <tr><td>Drag range</td><td>Click and drag the red bar between handles to slide the entire range while keeping its duration fixed.</td></tr>
+      <tr><td>Click date</td><td>Click the <span style="border-bottom:2px solid #3b82f6;padding-bottom:1px">blue-underlined dates</span> above the slider to open a calendar picker for precise date entry.</td></tr>
+      <tr><td>Preset buttons</td><td>Click a preset (7d, 30d, 90d, etc.) to jump to a common range. Active preset is highlighted.</td></tr>
+      <tr><td>Nudge arrows</td><td>Click the left/right arrows to shift the entire range earlier or later. Shifts by the range duration or 7 days, whichever is smaller.</td></tr>
+      <tr><td>Zoom in/out</td><td>Zoom into the current selection for finer control, or zoom out to see more range. Reset returns to full 3-year view. Labels adapt to zoom level.</td></tr>
+      <tr><td>MAX indicator</td><td>Appears automatically when the full 3-year range is selected. Disappears when the range is reduced.</td></tr>
+    </table>
+
+    <h3>Configuration Options</h3>
+    <table>
+      <tr><th>Variable</th><th>Description</th></tr>
+      <tr><td>threeYearsAgo</td><td>Controls how far back the slider goes. Change <code>today.getFullYear() - 3</code> to any number of years.</td></tr>
+      <tr><td>defaultStart</td><td>The initial left handle position. Set to any <code>Date</code> timestamp within the range.</td></tr>
+      <tr><td>defaultEnd</td><td>The initial right handle position. Defaults to today.</td></tr>
+      <tr><td>step</td><td>Snap increment. Currently <code>24 * 60 * 60 * 1000</code> (1 day). Use <code>7 * ...</code> for weekly steps.</td></tr>
+      <tr><td>behaviour</td><td>Set to <code>'drag'</code> to enable dragging the connected range bar. Other options: <code>'tap'</code>, <code>'snap'</code>.</td></tr>
+    </table>
+
+    <h3>Accessibility Notes</h3>
+    <ul>
+      <li>Monospace font prevents layout shift when dates change between single and double digit days.</li>
+      <li>Blue underline on dates signals clickability (follows link affordance conventions).</li>
+      <li>Grab cursor on handles and range bar communicates draggability.</li>
+      <li>Day count badge provides at-a-glance feedback on the selected duration.</li>
+    </ul>
+  </div>
+
+  <script src="node_modules/nouislider/dist/nouislider.js"></script>
+  <script>
+    // Date range: 3 years ago to today
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const threeYearsAgo = new Date(today.getFullYear() - 3, today.getMonth(), today.getDate());
+
+    const startTimestamp = threeYearsAgo.getTime();
+    const endTimestamp = today.getTime();
+
+    // Default selection: 1 year ago to today
+    const defaultStart = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()).getTime();
+    const defaultEnd = today.getTime();
+
+    const slider = document.getElementById('date-slider');
+
+    noUiSlider.create(slider, {
+      start: [defaultStart, defaultEnd],
+      connect: true,
+      range: {
+        min: startTimestamp,
+        max: endTimestamp
+      },
+      step: 24 * 60 * 60 * 1000, // 1 day
+      behaviour: 'drag'
+    });
+
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    }
+
+    function formatShort(date) {
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const day = String(date.getDate()).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${month} ${day}, ${year}`;
+    }
+
+    function daysBetween(d1, d2) {
+      return Math.round((d2 - d1) / (24 * 60 * 60 * 1000));
+    }
+
+    function updateDisplay(values) {
+      const start = new Date(Number(values[0]));
+      const end = new Date(Number(values[1]));
+
+      document.getElementById('start-date').textContent = formatShort(start);
+      document.getElementById('end-date').textContent = formatShort(end);
+
+      const days = daysBetween(start, end);
+      const maxDays = daysBetween(threeYearsAgo, today);
+      document.getElementById('days-badge').textContent =
+        `${days} day${days !== 1 ? 's' : ''}`;
+      document.getElementById('max-label').classList.toggle('visible', days >= maxDays);
+    }
+
+    slider.noUiSlider.on('update', updateDisplay);
+
+    // ─── Calendar dropdown ─────────────────────────────────
+    const calDropdown = document.getElementById('cal-dropdown');
+    const calOverlay = document.getElementById('cal-overlay');
+    let calViewMonth; // Date: 1st of the left month being displayed
+    let calPicking = 'start'; // 'start' or 'end'
+    let calTempStart = null;
+
+    function sameDay(a, b) {
+      return a.getFullYear() === b.getFullYear() &&
+             a.getMonth() === b.getMonth() &&
+             a.getDate() === b.getDate();
+    }
+
+    function openCalendar(which) {
+      const values = slider.noUiSlider.get();
+      const selStart = new Date(Number(values[0]));
+
+      calPicking = which;
+      calTempStart = null;
+
+      // Show the left calendar on the month of the start date
+      if (which === 'start') {
+        calViewMonth = new Date(selStart.getFullYear(), selStart.getMonth(), 1);
+      } else {
+        const selEnd = new Date(Number(values[1]));
+        // Show end month on right side, so left = month before
+        calViewMonth = new Date(selEnd.getFullYear(), selEnd.getMonth() - 1, 1);
+      }
+
+      updateCalLabel();
+      renderCalendar();
+      calDropdown.classList.add('open');
+      calOverlay.classList.add('open');
+    }
+
+    function closeCalendar() {
+      calDropdown.classList.remove('open');
+      calOverlay.classList.remove('open');
+    }
+
+    function updateCalLabel() {
+      const label = document.getElementById('cal-label');
+      if (calPicking === 'start') {
+        label.innerHTML = 'Click a date to set <strong>start</strong>';
+      } else {
+        label.innerHTML = 'Click a date to set <strong>end</strong>';
+      }
+    }
+
+    function renderCalendar() {
+      const values = slider.noUiSlider.get();
+      const selStart = calTempStart || new Date(Number(values[0]));
+      const selEnd = new Date(Number(values[1]));
+
+      const leftMonth = calViewMonth;
+      const rightMonth = new Date(leftMonth.getFullYear(), leftMonth.getMonth() + 1, 1);
+
+      document.getElementById('cal-left-title').textContent =
+        leftMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      document.getElementById('cal-right-title').textContent =
+        rightMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+      renderMonth('cal-left-days', leftMonth, selStart, selEnd);
+      renderMonth('cal-right-days', rightMonth, selStart, selEnd);
+    }
+
+    function renderMonth(containerId, monthDate, selStart, selEnd) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      const year = monthDate.getFullYear();
+      const month = monthDate.getMonth();
+      const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Empty cells for alignment
+      for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'cal-day empty';
+        container.appendChild(empty);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day';
+        cell.textContent = d;
+
+        const cellDate = new Date(year, month, d);
+
+        // Disable dates outside allowed range
+        if (cellDate < threeYearsAgo || cellDate > today) {
+          cell.classList.add('disabled');
+        } else {
+          // Highlight range
+          if (sameDay(cellDate, selStart)) cell.classList.add('range-start');
+          if (sameDay(cellDate, selEnd)) cell.classList.add('range-end');
+          if (cellDate > selStart && cellDate < selEnd) cell.classList.add('in-range');
+
+          // Today marker
+          if (sameDay(cellDate, today)) cell.classList.add('today');
+
+          cell.addEventListener('click', () => onCalDayClick(cellDate));
+        }
+
+        container.appendChild(cell);
+      }
+    }
+
+    function onCalDayClick(date) {
+      if (calPicking === 'start') {
+        calTempStart = date;
+        calPicking = 'end';
+        updateCalLabel();
+        renderCalendar();
+      } else {
+        let s = calTempStart || new Date(Number(slider.noUiSlider.get()[0]));
+        let e = date;
+        // Swap if end is before start
+        if (e < s) { const tmp = s; s = e; e = tmp; }
+        slider.noUiSlider.set([s.getTime(), e.getTime()]);
+        closeCalendar();
+      }
+    }
+
+    // Navigate months
+    document.getElementById('cal-prev').addEventListener('click', function() {
+      calViewMonth = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth() - 1, 1);
+      renderCalendar();
+    });
+
+    document.getElementById('cal-next').addEventListener('click', function() {
+      calViewMonth = new Date(calViewMonth.getFullYear(), calViewMonth.getMonth() + 1, 1);
+      renderCalendar();
+    });
+
+    // Open calendar on date click
+    document.getElementById('start-date').addEventListener('click', () => openCalendar('start'));
+    document.getElementById('end-date').addEventListener('click', () => openCalendar('end'));
+
+    // Close on overlay click
+    calOverlay.addEventListener('click', closeCalendar);
+
+    // Preset buttons
+    const presetBtns = document.querySelectorAll('.preset-btn');
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        presetBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const val = this.dataset.days;
+        if (val === 'max') {
+          slider.noUiSlider.set([startTimestamp, endTimestamp]);
+        } else {
+          const days = parseInt(val);
+          const presetStart = new Date(today.getFullYear(), today.getMonth(), today.getDate() - days);
+          slider.noUiSlider.set([presetStart.getTime(), endTimestamp]);
+        }
+      });
+    });
+
+    // Clear active preset when user manually drags
+    slider.noUiSlider.on('start', function() {
+      presetBtns.forEach(b => b.classList.remove('active'));
+    });
+
+    // Nudge buttons — shift range by its own duration or 7 days, whichever is smaller
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    function nudge(direction) {
+      const values = slider.noUiSlider.get();
+      const s = Number(values[0]);
+      const e = Number(values[1]);
+      const rangeDuration = e - s;
+      const shift = Math.min(rangeDuration, 7 * DAY_MS) * direction;
+      const newStart = s + shift;
+      const newEnd = e + shift;
+
+      // Clamp to view bounds
+      if (newStart < viewMin) {
+        slider.noUiSlider.set([viewMin, viewMin + rangeDuration]);
+      } else if (newEnd > viewMax) {
+        slider.noUiSlider.set([viewMax - rangeDuration, viewMax]);
+      } else {
+        slider.noUiSlider.set([newStart, newEnd]);
+      }
+      presetBtns.forEach(b => b.classList.remove('active'));
+    }
+
+    document.getElementById('nudge-left').addEventListener('click', () => nudge(-1));
+    document.getElementById('nudge-right').addEventListener('click', () => nudge(1));
+
+    // Zoom state
+    let viewMin = startTimestamp;
+    let viewMax = endTimestamp;
+    const MIN_VIEW_DAYS = 14; // don't zoom tighter than 2 weeks
+
+    function updateViewLabels() {
+      const labelsContainer = document.getElementById('year-labels');
+      labelsContainer.innerHTML = '';
+
+      const vMin = new Date(viewMin);
+      const vMax = new Date(viewMax);
+      const viewDays = daysBetween(vMin, vMax);
+
+      // Pick label granularity based on zoom level
+      if (viewDays <= 60) {
+        // Show month + day at start and end
+        [vMin, vMax].forEach(d => {
+          const span = document.createElement('span');
+          span.textContent = formatShort(d);
+          labelsContainer.appendChild(span);
+        });
+      } else if (viewDays <= 365) {
+        // Show months
+        const d = new Date(vMin.getFullYear(), vMin.getMonth(), 1);
+        while (d <= vMax) {
+          const span = document.createElement('span');
+          span.textContent = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+          labelsContainer.appendChild(span);
+          d.setMonth(d.getMonth() + 1);
+        }
+      } else {
+        // Show years
+        for (let y = vMin.getFullYear(); y <= vMax.getFullYear(); y++) {
+          const span = document.createElement('span');
+          span.textContent = y;
+          labelsContainer.appendChild(span);
+        }
+      }
+
+      // Update zoom level indicator
+      const zoomLabel = document.getElementById('zoom-level');
+      if (viewDays >= daysBetween(threeYearsAgo, today)) {
+        zoomLabel.textContent = '3yr view';
+      } else if (viewDays >= 365) {
+        zoomLabel.textContent = Math.round(viewDays / 365 * 10) / 10 + 'yr view';
+      } else if (viewDays >= 30) {
+        zoomLabel.textContent = Math.round(viewDays / 30) + 'mo view';
+      } else {
+        zoomLabel.textContent = viewDays + 'd view';
+      }
+
+      document.getElementById('zoom-out').disabled =
+        (viewMin <= startTimestamp && viewMax >= endTimestamp);
+      document.getElementById('zoom-in').disabled = (viewDays <= MIN_VIEW_DAYS);
+    }
+
+    function applyZoom() {
+      // Keep current handle values
+      const values = slider.noUiSlider.get();
+      slider.noUiSlider.updateOptions({
+        range: { min: viewMin, max: viewMax }
+      }, false);
+      // Restore handles (clamped to new view)
+      slider.noUiSlider.set(values);
+      updateViewLabels();
+    }
+
+    function zoomTo(newMin, newMax) {
+      // Clamp to absolute bounds
+      viewMin = Math.max(newMin, startTimestamp);
+      viewMax = Math.min(newMax, endTimestamp);
+      applyZoom();
+    }
+
+    document.getElementById('zoom-in').addEventListener('click', function() {
+      const values = slider.noUiSlider.get();
+      const selStart = Number(values[0]);
+      const selEnd = Number(values[1]);
+      const selRange = selEnd - selStart;
+      // Pad 50% on each side of the selection
+      const padding = Math.max(selRange * 0.5, MIN_VIEW_DAYS * DAY_MS * 0.5);
+      zoomTo(selStart - padding, selEnd + padding);
+    });
+
+    document.getElementById('zoom-out').addEventListener('click', function() {
+      const viewRange = viewMax - viewMin;
+      const center = (viewMin + viewMax) / 2;
+      const newRange = viewRange * 2;
+      zoomTo(center - newRange / 2, center + newRange / 2);
+    });
+
+    document.getElementById('zoom-reset').addEventListener('click', function() {
+      zoomTo(startTimestamp, endTimestamp);
+    });
+
+    // Initial labels
+    updateViewLabels();
+  </script>
+</body>
+</html>

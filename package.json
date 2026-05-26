@@ -1,0 +1,47 @@
+{
+  "name": "@stealth-metrix/date-range-slider",
+  "version": "1.0.0",
+  "description": "Interactive date range picker built on noUiSlider with calendar dropdown, presets, zoom, and nudge controls",
+  "main": "dist/date-range-slider.umd.js",
+  "module": "dist/date-range-slider.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/date-range-slider.es.js",
+      "require": "./dist/date-range-slider.umd.js"
+    },
+    "./dist/date-range-slider.css": "./dist/date-range-slider.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "date-picker",
+    "date-range",
+    "slider",
+    "nouislider",
+    "calendar",
+    "range-picker"
+  ],
+  "author": "Terrance MacGregor <terrance.macgregor@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stealth-metrix/date-range-slider.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "peerDependencies": {
+    "nouislider": ">=14.0.0"
+  },
+  "devDependencies": {
+    "nouislider": "^15.8.1",
+    "vite": "^8.0.14"
+  }
+}

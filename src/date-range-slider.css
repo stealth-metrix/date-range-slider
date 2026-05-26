@@ -1,0 +1,403 @@
+.drs-container {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 1.25rem 2rem;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.drs-container *, .drs-container *::before, .drs-container *::after {
+  box-sizing: border-box;
+}
+
+/* ─── Date summary row ─── */
+.drs-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.drs-date {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Monaco', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 2px;
+}
+
+.drs-date:hover {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.drs-separator {
+  color: #bbb;
+  font-size: 0.85rem;
+}
+
+.drs-badge {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', 'Monaco', monospace;
+  background: #e94560;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+
+.drs-max-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #e94560;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drs-max-label.visible {
+  opacity: 1;
+}
+
+/* ─── Preset buttons ─── */
+.drs-presets {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.75rem;
+}
+
+.drs-preset {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 0.65rem;
+  padding: 3px 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.drs-preset:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.drs-preset.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+/* ─── Slider row ─── */
+.drs-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.drs-nudge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #555;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.drs-nudge:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #f0f5ff;
+}
+
+.drs-nudge:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.drs-slider-wrap {
+  flex: 1;
+  padding: 0 0.25rem;
+}
+
+/* ─── Zoom controls ─── */
+.drs-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.drs-zoom-btn {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.drs-zoom-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #f0f5ff;
+}
+
+.drs-zoom-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.drs-zoom-level {
+  font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 0.6rem;
+  color: #999;
+  min-width: 3rem;
+  text-align: center;
+}
+
+/* ─── Year / date labels ─── */
+.drs-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  padding: 0;
+}
+
+.drs-labels span {
+  font-size: 0.65rem;
+  color: #999;
+  letter-spacing: 0.5px;
+}
+
+/* ─── noUiSlider overrides ─── */
+.drs-container .noUi-target {
+  background: #ddd;
+  border: none;
+  border-radius: 6px;
+  height: 8px;
+  box-shadow: none;
+}
+
+.drs-container .noUi-connect {
+  background: linear-gradient(90deg, #e94560, #c23152);
+  border-radius: 6px;
+  cursor: grab;
+}
+
+.drs-container .noUi-connect:active {
+  cursor: grabbing;
+}
+
+.drs-container .noUi-handle {
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  background: #e94560 !important;
+  border: 3px solid #fff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+  cursor: grab;
+  top: -9px !important;
+  right: -12px !important;
+}
+
+.drs-container .noUi-handle:active {
+  cursor: grabbing;
+}
+
+.drs-container .noUi-handle::before,
+.drs-container .noUi-handle::after {
+  display: none;
+}
+
+.drs-container .noUi-tooltip {
+  display: none !important;
+}
+
+/* ─── Calendar dropdown ─── */
+.drs-cal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 99;
+}
+
+.drs-cal-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  z-index: 100;
+  user-select: none;
+}
+
+.drs-cal-dropdown.open {
+  display: block;
+}
+
+.drs-cal-overlay.open {
+  display: block;
+}
+
+.drs-cal-grid {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.drs-cal-month {
+  width: 220px;
+}
+
+.drs-cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.drs-cal-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.drs-cal-nav {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.drs-cal-nav:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.drs-cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.drs-cal-weekdays span {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  padding: 2px 0;
+}
+
+.drs-cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+.drs-cal-day {
+  font-size: 0.7rem;
+  text-align: center;
+  padding: 5px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #333;
+}
+
+.drs-cal-day:hover {
+  background: #e8f0fe;
+}
+
+.drs-cal-day.empty {
+  cursor: default;
+}
+
+.drs-cal-day.empty:hover {
+  background: none;
+}
+
+.drs-cal-day.disabled {
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.drs-cal-day.disabled:hover {
+  background: none;
+}
+
+.drs-cal-day.in-range {
+  background: #fce4e8;
+  border-radius: 0;
+}
+
+.drs-cal-day.range-start {
+  background: #e94560;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+}
+
+.drs-cal-day.range-end {
+  background: #e94560;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+.drs-cal-day.range-start.range-end {
+  border-radius: 4px;
+}
+
+.drs-cal-day.today {
+  font-weight: 700;
+  box-shadow: inset 0 0 0 1px #3b82f6;
+}
+
+.drs-cal-label {
+  text-align: center;
+  font-size: 0.7rem;
+  color: #888;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.drs-cal-label strong {
+  color: #e94560;
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Date Range Slider — Examples</title>
+  <link href="../node_modules/nouislider/dist/nouislider.css" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #fff;
+      color: #333;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 2rem; }
+    h2 { font-size: 1.1rem; margin: 2.5rem 0 0.75rem; color: #222; }
+    p { font-size: 0.85rem; color: #666; margin-bottom: 0.75rem; line-height: 1.5; }
+    .example { max-width: 700px; margin-bottom: 1rem; }
+    pre {
+      background: #f5f5f5;
+      border-radius: 8px;
+      padding: 1rem;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    code { font-family: 'SF Mono', Menlo, Consolas, monospace; }
+    #output {
+      font-family: 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #f9f9f9;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>date-range-slider</h1>
+  <p class="subtitle">Interactive date range picker built on noUiSlider</p>
+
+  <!-- Example 1: Default -->
+  <h2>Default Configuration</h2>
+  <p>Just pass an element — gets 3-year range, all controls enabled.</p>
+  <div id="example-default" class="example"></div>
+  <div id="output"></div>
+
+  <pre><code>import createDateRangeSlider from 'date-range-slider';
+import 'date-range-slider/dist/date-range-slider.css';
+
+const picker = createDateRangeSlider('#my-element', {
+  onChange: ({ start, end, days }) => {
+    console.log(`${start} — ${end} (${days} days)`);
+  }
+});</code></pre>
+
+  <!-- Example 2: Custom range + presets -->
+  <h2>Custom Date Range &amp; Presets</h2>
+  <p>1-year range with custom preset buttons, no zoom controls.</p>
+  <div id="example-custom" class="example"></div>
+
+  <pre><code>createDateRangeSlider('#el', {
+  minDate: new Date(2025, 0, 1),
+  maxDate: new Date(2025, 11, 31),
+  startDate: new Date(2025, 3, 1),
+  endDate: new Date(2025, 6, 1),
+  showZoom: false,
+  presets: [
+    { label: 'Q1', days: 90 },
+    { label: 'Q2', days: 180 },
+    { label: 'H1', days: 182 },
+    { label: 'Full Year', days: 'max' },
+  ],
+});</code></pre>
+
+  <!-- Example 3: Minimal -->
+  <h2>Minimal — Slider Only</h2>
+  <p>No presets, no zoom, no nudge — just the slider and calendar.</p>
+  <div id="example-minimal" class="example"></div>
+
+  <pre><code>createDateRangeSlider('#el', {
+  showPresets: false,
+  showZoom: false,
+  showNudge: false,
+});</code></pre>
+
+  <!-- Example 4: API usage -->
+  <h2>Programmatic API</h2>
+  <pre><code>const picker = createDateRangeSlider('#el');
+
+// Get current selection
+const { start, end, days } = picker.getRange();
+
+// Set range programmatically
+picker.setRange(new Date(2024, 0, 1), new Date(2024, 5, 30));
+
+// Clean up
+picker.destroy();</code></pre>
+
+  <script type="module">
+    import createDateRangeSlider from '../src/index.js';
+
+    // Example 1: Default
+    const picker1 = createDateRangeSlider('#example-default', {
+      onChange: ({ start, end, days }) => {
+        document.getElementById('output').textContent =
+          `onChange → ${start.toLocaleDateString()} — ${end.toLocaleDateString()} (${days} days)`;
+      }
+    });
+
+    // Example 2: Custom
+    createDateRangeSlider('#example-custom', {
+      minDate: new Date(2025, 0, 1),
+      maxDate: new Date(2025, 11, 31),
+      startDate: new Date(2025, 3, 1),
+      endDate: new Date(2025, 6, 1),
+      showZoom: false,
+      presets: [
+        { label: 'Q1', days: 90 },
+        { label: 'Q2', days: 180 },
+        { label: 'H1', days: 182 },
+        { label: 'Full Year', days: 'max' },
+      ],
+    });
+
+    // Example 3: Minimal
+    createDateRangeSlider('#example-minimal', {
+      showPresets: false,
+      showZoom: false,
+      showNudge: false,
+    });
+  </script>
+</body>
+</html>
